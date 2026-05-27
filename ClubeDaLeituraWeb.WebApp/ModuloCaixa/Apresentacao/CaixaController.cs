@@ -17,19 +17,12 @@ public class CaixaController : Controller
     {
         List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
 
-        List<ListarCaixasViewModel> listarVms = new List<ListarCaixasViewModel>();
-
-        foreach (Caixa c in caixas)
-        {
-            ListarCaixasViewModel viewModel = new ListarCaixasViewModel(
-                c.Id,
-                c.Etiqueta,
-                c.Cor,
-                c.DiasDeEmprestimo
-            );
-
-            listarVms.Add(viewModel);
-        }
+        List<ListarCaixasViewModel> listarVms = caixas.Select(c => new ListarCaixasViewModel(
+            c.Id,
+            c.Etiqueta,
+            c.Cor,
+            c.DiasDeEmprestimo
+        )).ToList();
 
         return View(listarVms);
     }
