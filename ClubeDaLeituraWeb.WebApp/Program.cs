@@ -4,7 +4,8 @@ using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Configuração de Serviços
+#region Configuração de Serviços de Infraestrutura
+
 builder.Services.AddScoped(provider =>
 {
     ContextoJson contextoJson = new ContextoJson();
@@ -16,17 +17,23 @@ builder.Services.AddScoped(provider =>
 
 builder.Services.AddScoped<IRepositorioCaixa, RepositorioCaixaEmArquivo>();
 
+#endregion
+
+#region Configuração do MVC
+
 builder.Services.AddControllersWithViews().AddRazorOptions(options =>
 {
-    // Resetar a configuração padrão do MVC
+    // Reseta a configuração padrão do MVC
     options.ViewLocationFormats.Clear();
 
-    // Views dos módulos: /ModuloCaixa/Apresentacao/Views/Listar.cshtml
+    // Localização das Views dos módulos: /ModuloCaixa/Apresentacao/Views/Listar.cshtml
     options.ViewLocationFormats.Add("/Modulo{1}/Apresentacao/Views/{0}.cshtml");
 
-    // Views compartilhadas: /Compartilhado/Apresentacao/Views/_Layout.cshtml
+    // Localização das Views compartilhadas: /Compartilhado/Apresentacao/Views/_Layout.cshtml
     options.ViewLocationFormats.Add("/Compartilhado/Apresentacao/Views/{0}.cshtml");
 });
+
+#endregion
 
 var app = builder.Build();
 
@@ -36,5 +43,5 @@ app.UseStaticFiles();
 app.UseRouting();
 app.MapDefaultControllerRoute();
 
-// Execução do App
+// Execução do Servidor
 app.Run();
