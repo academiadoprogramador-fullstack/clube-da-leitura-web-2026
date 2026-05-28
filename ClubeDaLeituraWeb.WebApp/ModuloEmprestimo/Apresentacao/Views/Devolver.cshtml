@@ -1,0 +1,37 @@
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Devolução de Empréstimo";
+}
+
+@model DevolverEmprestimoViewModel;
+
+<form class="card border-primary-subtle shadow-sm mx-auto p-4" style="max-width: 620px;" asp-action="Devolver" asp-route-id="@Model.Id" method="post">
+    <div class="alert alert-primary border-start border-primary border-4 rounded-3" role="alert">
+        Deseja registrar a devolução deste empréstimo?
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Amigo" class="form-label fw-semibold text-primary text-uppercase small">Amigo</label>
+        <input asp-for="Amigo" type="text" class="form-control" disabled>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="Revista" class="form-label fw-semibold text-primary text-uppercase small">Revista</label>
+        <input asp-for="Revista" type="text" class="form-control" disabled>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DataEmprestimo" class="form-label fw-semibold text-primary text-uppercase small">Data de Empréstimo</label>
+        <input value="@Model.DataEmprestimo.ToShortDateString()" type="text" class="form-control" disabled>
+    </div>
+
+    <div class="mb-3">
+        <label asp-for="DataDevolucao" class="form-label fw-semibold text-primary text-uppercase small">Data de Devolução</label>
+        <input value="@Model.DataDevolucao.ToShortDateString()" type="text" class="form-control" disabled>
+    </div>
+
+    <div class="d-flex justify-content-end gap-2 mt-4">
+        <a class="btn btn-outline-primary rounded-pill px-4" asp-action="Listar">Voltar</a>
+        <button class="btn btn-primary rounded-pill px-4" type="submit">Confirmar</button>
+    </div>
+</form>

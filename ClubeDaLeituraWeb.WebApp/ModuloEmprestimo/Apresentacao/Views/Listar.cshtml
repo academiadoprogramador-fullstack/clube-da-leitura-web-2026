@@ -1,0 +1,54 @@
+@{
+    Layout = "_Layout";
+    ViewBag.Titulo = "Listagem de Empréstimos";
+}
+
+@model List<ListarEmprestimosViewModel>;
+
+<a class="btn btn-outline-primary rounded-pill px-4 mb-3" asp-action="Cadastrar">Registrar Novo</a>
+
+@if (Model.Count == 0)
+{
+    <div class="alert alert-primary border-start border-primary border-4 rounded-3" role="alert">
+        Nenhum empréstimo registrado.
+    </div>
+}
+else
+{
+    <div class="table-responsive">
+        <table class="table table-hover table-bordered align-middle bg-white">
+            <thead class="table-primary">
+                <tr>
+                    <th>ID</th>
+                    <th>Amigo</th>
+                    <th>Revista</th>
+                    <th>Empréstimo</th>
+                    <th>Devolução Prevista</th>
+                    <th>Devolvido em</th>
+                    <th>Status</th>
+                    <th>Ações</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (ListarEmprestimosViewModel e in Model)
+                {
+                    <tr class="@(e.EstaAtrasado ? "table-danger" : string.Empty)">
+                        <td>@e.Id</td>
+                        <td>@e.Amigo</td>
+                        <td>@e.Revista</td>
+                        <td>@e.DataEmprestimo.ToShortDateString()</td>
+                        <td>@e.DataDevolucao.ToShortDateString()</td>
+                        <td>@(e.DataDevolvido?.ToShortDateString() ?? "-")</td>
+                        <td>@e.Status</td>
+                        <td>
+                            @if (e.DataDevolvido == null)
+                            {
+                                <a class="btn btn-outline-primary btn-sm rounded-pill px-3" asp-action="Devolver" asp-route-id="@e.Id">Devolver</a>
+                            }
+                        </td>
+                    </tr>
+                }
+            </tbody>
+        </table>
+    </div>
+}
