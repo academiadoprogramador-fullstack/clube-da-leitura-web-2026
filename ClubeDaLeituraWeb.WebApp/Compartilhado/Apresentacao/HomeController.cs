@@ -1,6 +1,6 @@
 using Microsoft.AspNetCore.Mvc;
 
-namespace ClubeDaLeituraWeb.WebApp.ModuloHome.Apresentacao;
+namespace ClubeDaLeituraWeb.WebApp.Compartilhado.Apresentacao;
 
 public class HomeController : Controller
 {
