@@ -90,6 +90,19 @@ public class CaixaController : Controller
     [HttpPost]
     public ActionResult Editar(EditarCaixaViewModel editarVm)
     {
+        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
+
+        foreach (Caixa c in caixas)
+        {
+            if (c.Id != editarVm.Id && string.Equals(c.Etiqueta, editarVm.Etiqueta, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(
+                    nameof(editarVm.Etiqueta),
+                    "Já existe uma caixa com esta etiqueta."
+                );
+            }
+        }
+
         if (!ModelState.IsValid)
             return View(editarVm);
 
