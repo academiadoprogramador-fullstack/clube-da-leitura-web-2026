@@ -8,6 +8,13 @@
 
 <a class="btn btn-outline-primary rounded-pill px-4 mb-3" asp-action="Cadastrar">Cadastrar Novo</a>
 
+@if (TempData["MensagemErro"] is string mensagemErro)
+{
+    <div class="alert alert-danger border-start border-danger border-4 rounded-3" role="alert">
+        @mensagemErro
+    </div>
+}
+
 @if (Model.Count == 0)
 {
     <div class="alert alert-primary border-start border-primary border-2 rounded-3" role="alert">

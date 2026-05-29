@@ -1,4 +1,5 @@
 using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Dominio;
+using ClubeDaLeituraWeb.WebApp.ModuloRevista.Dominio;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClubeDaLeituraWeb.WebApp.ModuloCaixa.Apresentacao;
@@ -6,10 +7,15 @@ namespace ClubeDaLeituraWeb.WebApp.ModuloCaixa.Apresentacao;
 public class CaixaController : Controller
 {
     private readonly IRepositorioCaixa repositorioCaixa;
+    private readonly IRepositorioRevista repositorioRevista;
 
-    public CaixaController(IRepositorioCaixa repositorioCaixa)
+    public CaixaController(
+        IRepositorioCaixa repositorioCaixa,
+        IRepositorioRevista repositorioRevista
+    )
     {
         this.repositorioCaixa = repositorioCaixa;
+        this.repositorioRevista = repositorioRevista;
     }
 
     [HttpGet]
@@ -138,6 +144,18 @@ public class CaixaController : Controller
     [HttpPost]
     public ActionResult Excluir(ExcluirCaixaViewModel excluirVm)
     {
+        List<Revista> revistas = repositorioRevista.SelecionarTodos();
+
+        foreach (Revista r in revistas)
+        {
+            if (string.Equals(r.Caixa.Id, excluirVm.Id))
+            {
+                TempData["MensagemErro"] = "Esta caixa não pode ser excluída pois está relacionada a uma revista.";
+
+                return RedirectToAction(nameof(Listar));
+            }
+        }
+
         repositorioCaixa.Excluir(excluirVm.Id);
 
         return RedirectToAction(nameof(Listar));
