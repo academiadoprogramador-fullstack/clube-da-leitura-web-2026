@@ -42,6 +42,19 @@ public class CaixaController : Controller
     [HttpPost]
     public ActionResult Cadastrar(CadastrarCaixaViewModel cadastrarVm)
     {
+        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
+
+        foreach (Caixa c in caixas)
+        {
+            if (string.Equals(c.Etiqueta, cadastrarVm.Etiqueta, StringComparison.OrdinalIgnoreCase))
+            {
+                ModelState.AddModelError(
+                    nameof(cadastrarVm.Etiqueta),
+                    "Já existe uma caixa com esta etiqueta."
+                );
+            }
+        }
+
         if (!ModelState.IsValid)
             return View(cadastrarVm);
 
