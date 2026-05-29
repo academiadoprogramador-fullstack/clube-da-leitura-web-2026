@@ -1,34 +1,28 @@
+using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Aplicacao;
 using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Dominio;
 using ClubeDaLeituraWeb.WebApp.ModuloRevista.Dominio;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClubeDaLeituraWeb.WebApp.ModuloCaixa.Apresentacao;
 
 public class CaixaController : Controller
 {
-    private readonly IRepositorioCaixa repositorioCaixa;
-    private readonly IRepositorioRevista repositorioRevista;
+    private readonly ServicoCaixa servicoCaixa;
 
-    public CaixaController(
-        IRepositorioCaixa repositorioCaixa,
-        IRepositorioRevista repositorioRevista
-    )
+    public CaixaController(ServicoCaixa servicoCaixa)
     {
-        this.repositorioCaixa = repositorioCaixa;
-        this.repositorioRevista = repositorioRevista;
+        this.servicoCaixa = servicoCaixa;
     }
 
     [HttpGet]
     public ActionResult Listar()
     {
-        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
+        List<ListarCaixasDto> dtos = servicoCaixa.SelecionarTodos();
 
-        List<ListarCaixasViewModel> listarVms = caixas.Select(c => new ListarCaixasViewModel(
-            c.Id,
-            c.Etiqueta,
-            c.Cor,
-            c.DiasDeEmprestimo
-        )).ToList();
+        List<ListarCaixasViewModel> listarVms = dtos
+            .Select(c => new ListarCaixasViewModel(c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo))
+            .ToList();
 
         return View(listarVms);
     }
@@ -48,29 +42,29 @@ public class CaixaController : Controller
     [HttpPost]
     public ActionResult Cadastrar(CadastrarCaixaViewModel cadastrarVm)
     {
-        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
-
-        foreach (Caixa c in caixas)
-        {
-            if (string.Equals(c.Etiqueta, cadastrarVm.Etiqueta, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(
-                    nameof(cadastrarVm.Etiqueta),
-                    "Já existe uma caixa com esta etiqueta."
-                );
-            }
-        }
-
         if (!ModelState.IsValid)
             return View(cadastrarVm);
 
-        Caixa novaCaixa = new Caixa(
+        CadastrarCaixaDto dto = new CadastrarCaixaDto(
             cadastrarVm.Etiqueta,
             cadastrarVm.Cor,
             cadastrarVm.DiasDeEmprestimo
         );
 
-        repositorioCaixa.Cadastrar(novaCaixa);
+        Result resultado = servicoCaixa.Cadastrar(dto);
+
+        if (resultado.IsFailed)
+        {
+            foreach (IError erro in resultado.Errors)
+            {
+                string campo =
+                    erro.Metadata["Campo"] is string ? erro.Metadata["Campo"].ToString()! : string.Empty;
+
+                ModelState.AddModelError(campo, erro.Message);
+            }
+
+            return View(cadastrarVm);
+        }
 
         return RedirectToAction(nameof(Listar));
     }
@@ -78,16 +72,22 @@ public class CaixaController : Controller
     [HttpGet]
     public ActionResult Editar(string id)
     {
-        Caixa? caixa = repositorioCaixa.SelecionarPorId(id);
+        Result<DetalhesCaixaDto> resultado = servicoCaixa.SelecionarPorId(id);
 
-        if (caixa == null)
+        if (resultado.IsFailed)
+        {
+            TempData["MensagemErro"] = resultado.Errors.First().Message;
+
             return RedirectToAction(nameof(Listar));
+        }
+
+        DetalhesCaixaDto dto = resultado.Value;
 
         EditarCaixaViewModel editarVm = new EditarCaixaViewModel(
             id,
-            caixa.Etiqueta,
-            caixa.Cor,
-            caixa.DiasDeEmprestimo
+            dto.Etiqueta,
+            dto.Cor,
+            dto.DiasDeEmprestimo
         );
 
         return View(editarVm);
@@ -96,29 +96,28 @@ public class CaixaController : Controller
     [HttpPost]
     public ActionResult Editar(EditarCaixaViewModel editarVm)
     {
-        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
-
-        foreach (Caixa c in caixas)
-        {
-            if (c.Id != editarVm.Id && string.Equals(c.Etiqueta, editarVm.Etiqueta, StringComparison.OrdinalIgnoreCase))
-            {
-                ModelState.AddModelError(
-                    nameof(editarVm.Etiqueta),
-                    "Já existe uma caixa com esta etiqueta."
-                );
-            }
-        }
-
         if (!ModelState.IsValid)
             return View(editarVm);
 
-        Caixa caixaAtualizada = new Caixa(
+        Result resultado = servicoCaixa.Editar(new EditarCaixaDto(
+            editarVm.Id,
             editarVm.Etiqueta,
             editarVm.Cor,
             editarVm.DiasDeEmprestimo
-        );
+        ));
 
-        repositorioCaixa.Editar(editarVm.Id, caixaAtualizada);
+        if (resultado.IsFailed)
+        {
+            foreach (IError erro in resultado.Errors)
+            {
+                string campo =
+                    erro.Metadata["Campo"] is string ? erro.Metadata["Campo"].ToString()! : string.Empty;
+
+                ModelState.AddModelError(campo, erro.Message);
+            }
+
+            return View(editarVm);
+        }
 
         return RedirectToAction(nameof(Listar));
     }
@@ -126,16 +125,22 @@ public class CaixaController : Controller
     [HttpGet]
     public ActionResult Excluir(string id)
     {
-        Caixa? caixa = repositorioCaixa.SelecionarPorId(id);
+        Result<DetalhesCaixaDto> resultado = servicoCaixa.SelecionarPorId(id);
 
-        if (caixa == null)
+        if (resultado.IsFailed)
+        {
+            TempData["MensagemErro"] = resultado.Errors.First().Message;
+
             return RedirectToAction(nameof(Listar));
+        }
+
+        DetalhesCaixaDto dto = resultado.Value;
 
         ExcluirCaixaViewModel excluirVm = new ExcluirCaixaViewModel(
             id,
-            caixa.Etiqueta,
-            caixa.Cor,
-            caixa.DiasDeEmprestimo
+            dto.Etiqueta,
+            dto.Cor,
+            dto.DiasDeEmprestimo
         );
 
         return View(excluirVm);
@@ -144,19 +149,10 @@ public class CaixaController : Controller
     [HttpPost]
     public ActionResult Excluir(ExcluirCaixaViewModel excluirVm)
     {
-        List<Revista> revistas = repositorioRevista.SelecionarTodos();
+        Result resultado = servicoCaixa.Excluir(excluirVm.Id);
 
-        foreach (Revista r in revistas)
-        {
-            if (string.Equals(r.Caixa.Id, excluirVm.Id))
-            {
-                TempData["MensagemErro"] = "Esta caixa não pode ser excluída pois está relacionada a uma revista.";
-
-                return RedirectToAction(nameof(Listar));
-            }
-        }
-
-        repositorioCaixa.Excluir(excluirVm.Id);
+        if (resultado.IsFailed)
+            TempData["MensagemErro"] = resultado.Errors.First().Message;
 
         return RedirectToAction(nameof(Listar));
     }
