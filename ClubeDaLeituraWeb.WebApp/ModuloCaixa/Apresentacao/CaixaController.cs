@@ -69,7 +69,7 @@ public class CaixaController : Controller
 
         if (resultado.IsFailed)
         {
-            TempData["MensagemErro"] = resultado.Errors.First().Message;
+            TempData.AddErrorMessage(resultado);
 
             return RedirectToAction(nameof(Listar));
         }
@@ -116,7 +116,7 @@ public class CaixaController : Controller
 
         if (resultado.IsFailed)
         {
-            TempData["MensagemErro"] = resultado.Errors.First().Message;
+            TempData.AddErrorMessage(resultado);
 
             return RedirectToAction(nameof(Listar));
         }
@@ -139,7 +139,7 @@ public class CaixaController : Controller
         Result resultado = servicoCaixa.Excluir(excluirVm.Id);
 
         if (resultado.IsFailed)
-            TempData["MensagemErro"] = resultado.Errors.First().Message;
+            TempData.AddErrorMessage(resultado);
 
         return RedirectToAction(nameof(Listar));
     }
