@@ -1,51 +1,14 @@
-using ClubeDaLeituraWeb.WebApp.Compartilhado.Infra.Arquivos;
-using ClubeDaLeituraWeb.WebApp.ModuloAmigo.Dominio;
-using ClubeDaLeituraWeb.WebApp.ModuloAmigo.Infra;
-using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Aplicacao;
-using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Dominio;
-using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Infra;
-using ClubeDaLeituraWeb.WebApp.ModuloEmprestimo.Dominio;
-using ClubeDaLeituraWeb.WebApp.ModuloEmprestimo.Infra;
-using ClubeDaLeituraWeb.WebApp.ModuloRevista.Dominio;
-using ClubeDaLeituraWeb.WebApp.ModuloRevista.Infra;
+using ClubeDaLeituraWeb.WebApp.Compartilhado.Aplicacao;
+using ClubeDaLeituraWeb.WebApp.Compartilhado.Apresentacao;
+using ClubeDaLeituraWeb.WebApp.Compartilhado.Infra;
 
 var builder = WebApplication.CreateBuilder(args);
 
-#region Configuração de Serviços de Infraestrutura
+builder.Services.AddInfraRepositories();
 
-builder.Services.AddScoped(provider =>
-{
-    ContextoJson contextoJson = new ContextoJson();
+builder.Services.AddApplicationServices();
 
-    contextoJson.Carregar();
-
-    return contextoJson;
-});
-
-builder.Services.AddScoped<IRepositorioCaixa, RepositorioCaixaEmArquivo>();
-builder.Services.AddScoped<IRepositorioRevista, RepositorioRevistaEmArquivo>();
-builder.Services.AddScoped<IRepositorioAmigo, RepositorioAmigoEmArquivo>();
-builder.Services.AddScoped<IRepositorioEmprestimo, RepositorioEmprestimoEmArquivo>();
-
-builder.Services.AddScoped<ServicoCaixa>();
-
-#endregion
-
-#region Configuração do MVC
-
-builder.Services.AddControllersWithViews().AddRazorOptions(options =>
-{
-    // Reseta a configuração padrão do MVC
-    options.ViewLocationFormats.Clear();
-
-    // Localização das Views dos módulos: /ModuloCaixa/Apresentacao/Views/Listar.cshtml
-    options.ViewLocationFormats.Add("/Modulo{1}/Apresentacao/Views/{0}.cshtml");
-
-    // Localização das Views compartilhadas: /Compartilhado/Apresentacao/Views/_Layout.cshtml
-    options.ViewLocationFormats.Add("/Compartilhado/Apresentacao/Views/{0}.cshtml");
-});
-
-#endregion
+builder.Services.AddPresentation();
 
 var app = builder.Build();
 
