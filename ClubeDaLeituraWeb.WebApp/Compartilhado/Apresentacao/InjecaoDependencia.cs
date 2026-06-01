@@ -1,4 +1,6 @@
 
+using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Apresentacao;
+
 namespace ClubeDaLeituraWeb.WebApp.Compartilhado.Apresentacao;
 
 public static class InjecaoDependencia
@@ -15,6 +17,11 @@ public static class InjecaoDependencia
 
             // Localização das Views compartilhadas: /Compartilhado/Apresentacao/Views/_Layout.cshtml
             options.ViewLocationFormats.Add("/Compartilhado/Apresentacao/Views/{0}.cshtml");
+        });
+
+        services.AddAutoMapper(config =>
+        {
+            config.AddProfile<CaixaProfile>();
         });
     }
 }

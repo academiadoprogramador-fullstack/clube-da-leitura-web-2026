@@ -1,27 +1,19 @@
 using ClubeDaLeituraWeb.WebApp.Compartilhado.Apresentacao.Extensions;
 using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Aplicacao;
 using FluentResults;
+using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClubeDaLeituraWeb.WebApp.ModuloCaixa.Apresentacao;
 
-public class CaixaController : Controller
+public class CaixaController(ServicoCaixa servicoCaixa, IMapper mapeador) : Controller
 {
-    private readonly ServicoCaixa servicoCaixa;
-
-    public CaixaController(ServicoCaixa servicoCaixa)
-    {
-        this.servicoCaixa = servicoCaixa;
-    }
-
     [HttpGet]
     public ActionResult Listar()
     {
         List<ListarCaixasDto> dtos = servicoCaixa.SelecionarTodos();
 
-        List<ListarCaixasViewModel> listarVms = dtos
-            .Select(c => new ListarCaixasViewModel(c.Id, c.Etiqueta, c.Cor, c.DiasDeEmprestimo))
-            .ToList();
+        List<ListarCaixasViewModel> listarVms = mapeador.Map<List<ListarCaixasViewModel>>(dtos);
 
         return View(listarVms);
     }
@@ -44,11 +36,7 @@ public class CaixaController : Controller
         if (!ModelState.IsValid)
             return View(cadastrarVm);
 
-        CadastrarCaixaDto dto = new CadastrarCaixaDto(
-            cadastrarVm.Etiqueta,
-            cadastrarVm.Cor,
-            cadastrarVm.DiasDeEmprestimo
-        );
+        CadastrarCaixaDto dto = mapeador.Map<CadastrarCaixaDto>(cadastrarVm);
 
         Result resultado = servicoCaixa.Cadastrar(dto);
 
@@ -76,12 +64,7 @@ public class CaixaController : Controller
 
         DetalhesCaixaDto dto = resultado.Value;
 
-        EditarCaixaViewModel editarVm = new EditarCaixaViewModel(
-            id,
-            dto.Etiqueta,
-            dto.Cor,
-            dto.DiasDeEmprestimo
-        );
+        EditarCaixaViewModel editarVm = mapeador.Map<EditarCaixaViewModel>(dto);
 
         return View(editarVm);
     }
@@ -92,12 +75,9 @@ public class CaixaController : Controller
         if (!ModelState.IsValid)
             return View(editarVm);
 
-        Result resultado = servicoCaixa.Editar(new EditarCaixaDto(
-            editarVm.Id,
-            editarVm.Etiqueta,
-            editarVm.Cor,
-            editarVm.DiasDeEmprestimo
-        ));
+        EditarCaixaDto dto = mapeador.Map<EditarCaixaDto>(editarVm);
+
+        Result resultado = servicoCaixa.Editar(dto);
 
         if (resultado.IsFailed)
         {
@@ -123,12 +103,7 @@ public class CaixaController : Controller
 
         DetalhesCaixaDto dto = resultado.Value;
 
-        ExcluirCaixaViewModel excluirVm = new ExcluirCaixaViewModel(
-            id,
-            dto.Etiqueta,
-            dto.Cor,
-            dto.DiasDeEmprestimo
-        );
+        ExcluirCaixaViewModel excluirVm = mapeador.Map<ExcluirCaixaViewModel>(dto);
 
         return View(excluirVm);
     }
