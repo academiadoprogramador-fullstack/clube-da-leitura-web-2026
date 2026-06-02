@@ -23,35 +23,32 @@
 }
 else
 {
-    <div class="table-responsive">
-        <table class="table table-hover table-bordered align-middle bg-white">
-            <thead class="table-primary">
-                <tr>
-                    <th>ID</th>
-                    <th>Etiqueta</th>
-                    <th>Cor</th>
-                    <th>Dias de Empréstimo</th>
-                    <th>Ações</th>
-                </tr>
-            </thead>
+    <div class="row row-cols-1 row-cols-md-2 row-cols-xl-3 g-2">
+        @foreach (ListarCaixasViewModel c in Model)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between mb-3">
+                            <h5 class="card-title mb-0">@c.Etiqueta</h5>
+                            <span class="badge text-bg-primary rounded-pill">#@c.Id</span>
+                        </div>
 
-            <tbody>
-                @foreach (ListarCaixasViewModel c in Model)
-                {
-                    <tr>
-                        <td>@c.Id</td>
-                        <td>@c.Etiqueta</td>
-                        <td>@c.Cor</td>
-                        <td>@c.DiasDeEmprestimo</td>
-                        <td>
-                            <div class="d-flex gap-2">
-                                <a class="btn btn-outline-primary btn-sm rounded-pill px-3" asp-action="Editar" asp-route-id="@c.Id">Editar</a>
-                                <a class="btn btn-outline-primary btn-sm rounded-pill px-3" asp-action="Excluir" asp-route-id="@c.Id">Excluir</a>
-                            </div>
-                        </td>
-                    </tr>
-                }
-            </tbody>
-        </table>
+                        <dl class="row g-2 mb-4">
+                            <dt class="col-6 text-secondary fw-semibold">Cor</dt>
+                            <dd class="col-6 mb-0 text-break">@c.Cor</dd>
+
+                            <dt class="col-6 text-secondary fw-semibold">Dias de Empréstimo</dt>
+                            <dd class="col-6 mb-0 text-break">@c.DiasDeEmprestimo</dd>
+                        </dl>
+
+                        <div class="d-flex flex-wrap gap-2 mt-auto justify-content-end">
+                            <a class="btn btn-outline-primary btn-sm rounded-pill px-3" asp-action="Editar" asp-route-id="@c.Id">Editar</a>
+                            <a class="btn btn-outline-primary btn-sm rounded-pill px-3" asp-action="Excluir" asp-route-id="@c.Id">Excluir</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
     </div>
 }
