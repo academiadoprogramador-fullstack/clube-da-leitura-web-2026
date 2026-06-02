@@ -1,6 +1,8 @@
 # Clube da Leitura
 
-![image](./.docs/clube_da_leitura.gif)
+<p align="center">
+  <img src="./.docs/clube_da_leitura.gif">
+</p>
 
 Gustavo tem uma coleção grande de revistas em quadrinhos. Por isso, resolveu
 emprestar para os amigos. Assim foi criado o Clube da Leitura.
