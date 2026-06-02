@@ -109,6 +109,18 @@ public class ServicoRevista
         return Result.Ok();
     }
 
+    public Result Excluir(string id)
+    {
+        Revista? revista = repositorioRevista.SelecionarPorId(id);
+
+        if (revista == null)
+            return Result.Fail("Revista não encontrada.");
+
+        repositorioRevista.Excluir(id);
+
+        return Result.Ok();
+    }
+
     public Result<DetalhesRevistaDto> SelecionarPorId(string id)
     {
         Revista? revista = repositorioRevista.SelecionarPorId(id);

@@ -12,5 +12,7 @@ public class RevistaProfile : Profile
 
         CreateMap<DetalhesRevistaDto, EditarRevistaViewModel>()
             .ForCtorParam("Caixas", opt => opt.MapFrom(_ => new List<OpcaoCaixaViewModel>()));
+
+        CreateMap<DetalhesRevistaDto, ExcluirRevistaViewModel>();
     }
 }

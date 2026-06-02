@@ -121,18 +121,17 @@ public class RevistaController : Controller
     [HttpGet]
     public ActionResult Excluir(string id)
     {
-        Revista? revista = repositorioRevista.SelecionarPorId(id);
+        Result<DetalhesRevistaDto> resultado = servicoRevista.SelecionarPorId(id);
 
-        if (revista == null)
+        if (resultado.IsFailed)
+        {
+            TempData.AddErrorMessage(resultado);
+
             return RedirectToAction(nameof(Listar));
+        }
 
-        ExcluirRevistaViewModel excluirVm = new ExcluirRevistaViewModel(
-            id,
-            revista.Titulo,
-            revista.NumeroEdicao,
-            revista.AnoPublicacao,
-            revista.Caixa.Etiqueta
-        );
+        ExcluirRevistaViewModel excluirVm =
+            mapeador.Map<ExcluirRevistaViewModel>(resultado.Value);
 
         return View(excluirVm);
     }
@@ -140,7 +139,10 @@ public class RevistaController : Controller
     [HttpPost]
     public ActionResult Excluir(ExcluirRevistaViewModel excluirVm)
     {
-        repositorioRevista.Excluir(excluirVm.Id);
+        Result resultado = servicoRevista.Excluir(excluirVm.Id);
+
+        if (resultado.IsFailed)
+            TempData.AddErrorMessage(resultado);
 
         return RedirectToAction(nameof(Listar));
     }
