@@ -13,7 +13,7 @@ public record ListarRevistasViewModel(
     string Titulo,
     int NumeroEdicao,
     int AnoPublicacao,
-    string Caixa,
+    string CaixaEtiqueta,
     string Status
 );
 

@@ -1,5 +1,15 @@
 namespace ClubeDaLeituraWeb.WebApp.ModuloRevista.Aplicacao;
 
+public record ListarRevistasDto(
+    string Id,
+    string Titulo,
+    int NumeroEdicao,
+    int AnoPublicacao,
+    string CaixaEtiqueta,
+    string Status
+);
+
+
 public record CadastrarRevistaDto(
     string Titulo,
     int NumeroEdicao,

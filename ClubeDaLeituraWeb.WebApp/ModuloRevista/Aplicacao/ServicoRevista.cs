@@ -138,6 +138,21 @@ public class ServicoRevista
         ));
     }
 
+    public List<ListarRevistasDto> SelecionarTodos()
+    {
+        List<Revista> revistas = repositorioRevista.SelecionarTodos();
+
+        return revistas.Select(r => new ListarRevistasDto(
+            r.Id,
+            r.Titulo,
+            r.NumeroEdicao,
+            r.AnoPublicacao,
+            r.Caixa.Etiqueta,
+            r.Status.ToString()
+        ))
+        .ToList();
+    }
+
     private bool ExisteRevistaComMesmoTituloEEdicao(
         string titulo,
         int numeroEdicao,

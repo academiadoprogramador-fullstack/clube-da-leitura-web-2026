@@ -1,47 +1,24 @@
 using AutoMapper;
 using ClubeDaLeituraWeb.WebApp.Compartilhado.Apresentacao.Extensions;
-using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Dominio;
+using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Aplicacao;
 using ClubeDaLeituraWeb.WebApp.ModuloRevista.Aplicacao;
-using ClubeDaLeituraWeb.WebApp.ModuloRevista.Dominio;
 using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClubeDaLeituraWeb.WebApp.ModuloRevista.Apresentacao;
 
-public class RevistaController : Controller
+public class RevistaController(
+    ServicoRevista servicoRevista,
+    ServicoCaixa servicoCaixa,
+    IMapper mapeador
+) : Controller
 {
-    private readonly ServicoRevista servicoRevista;
-    private readonly IMapper mapeador;
-    private readonly IRepositorioRevista repositorioRevista;
-    private readonly IRepositorioCaixa repositorioCaixa;
-
-    public RevistaController(
-        ServicoRevista servicoRevista,
-        IMapper mapeador,
-        IRepositorioRevista repositorioRevista,
-        IRepositorioCaixa repositorioCaixa
-    )
-    {
-        this.servicoRevista = servicoRevista;
-        this.mapeador = mapeador;
-        this.repositorioRevista = repositorioRevista;
-        this.repositorioCaixa = repositorioCaixa;
-    }
-
     [HttpGet]
     public ActionResult Listar()
     {
-        List<Revista> revistas = repositorioRevista.SelecionarTodos();
+        List<ListarRevistasDto> dtos = servicoRevista.SelecionarTodos();
 
-        List<ListarRevistasViewModel> listarVms =
-            revistas.Select(revista => new ListarRevistasViewModel(
-                revista.Id,
-                revista.Titulo,
-                revista.NumeroEdicao,
-                revista.AnoPublicacao,
-                revista.Caixa.Etiqueta,
-                revista.Status.ToString()
-            )).ToList();
+        List<ListarRevistasViewModel> listarVms = mapeador.Map<List<ListarRevistasViewModel>>(dtos);
 
         return View(listarVms);
     }
@@ -149,10 +126,8 @@ public class RevistaController : Controller
 
     private List<OpcaoCaixaViewModel> SelecionarCaixas()
     {
-        List<Caixa> caixas = repositorioCaixa.SelecionarTodos();
+        List<ListarCaixasDto> dtos = servicoCaixa.SelecionarTodos();
 
-        return caixas
-            .Select(caixa => new OpcaoCaixaViewModel(caixa.Id, caixa.Etiqueta))
-            .ToList();
+        return mapeador.Map<List<OpcaoCaixaViewModel>>(dtos);
     }
 }
