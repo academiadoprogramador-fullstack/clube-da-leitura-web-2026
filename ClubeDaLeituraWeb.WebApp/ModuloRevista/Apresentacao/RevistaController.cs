@@ -1,19 +1,29 @@
+using AutoMapper;
+using ClubeDaLeituraWeb.WebApp.Compartilhado.Apresentacao.Extensions;
 using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Dominio;
+using ClubeDaLeituraWeb.WebApp.ModuloRevista.Aplicacao;
 using ClubeDaLeituraWeb.WebApp.ModuloRevista.Dominio;
+using FluentResults;
 using Microsoft.AspNetCore.Mvc;
 
 namespace ClubeDaLeituraWeb.WebApp.ModuloRevista.Apresentacao;
 
 public class RevistaController : Controller
 {
+    private readonly ServicoRevista servicoRevista;
+    private readonly IMapper mapeador;
     private readonly IRepositorioRevista repositorioRevista;
     private readonly IRepositorioCaixa repositorioCaixa;
 
     public RevistaController(
+        ServicoRevista servicoRevista,
+        IMapper mapeador,
         IRepositorioRevista repositorioRevista,
         IRepositorioCaixa repositorioCaixa
     )
     {
+        this.servicoRevista = servicoRevista;
+        this.mapeador = mapeador;
         this.repositorioRevista = repositorioRevista;
         this.repositorioCaixa = repositorioCaixa;
     }
@@ -53,25 +63,19 @@ public class RevistaController : Controller
     [HttpPost]
     public ActionResult Cadastrar(CadastrarRevistaViewModel cadastrarVm)
     {
-        Caixa? caixaSelecionada = repositorioCaixa.SelecionarPorId(cadastrarVm.CaixaId);
-
-        if (caixaSelecionada == null)
-            ModelState.AddModelError(nameof(cadastrarVm.CaixaId), "Selecione uma caixa válida.");
-
-        if (cadastrarVm.AnoPublicacao > DateTime.Now.Year)
-            ModelState.AddModelError(nameof(cadastrarVm.AnoPublicacao), "O campo \"Ano de Publicação\" deve conter um ano válido.");
-
         if (!ModelState.IsValid)
             return View(cadastrarVm with { Caixas = SelecionarCaixas() });
 
-        Revista novaRevista = new Revista(
-            cadastrarVm.Titulo,
-            cadastrarVm.NumeroEdicao,
-            cadastrarVm.AnoPublicacao,
-            caixaSelecionada!
-        );
+        CadastrarRevistaDto dto = mapeador.Map<CadastrarRevistaDto>(cadastrarVm);
 
-        repositorioRevista.Cadastrar(novaRevista);
+        Result resultado = servicoRevista.Cadastrar(dto);
+
+        if (resultado.IsFailed)
+        {
+            ModelState.AddModelError(resultado);
+
+            return View(cadastrarVm with { Caixas = SelecionarCaixas() });
+        }
 
         return RedirectToAction(nameof(Listar));
     }

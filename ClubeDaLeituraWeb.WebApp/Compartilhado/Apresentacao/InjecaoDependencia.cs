@@ -1,5 +1,6 @@
 
 using ClubeDaLeituraWeb.WebApp.ModuloCaixa.Apresentacao;
+using ClubeDaLeituraWeb.WebApp.ModuloRevista.Apresentacao;
 
 namespace ClubeDaLeituraWeb.WebApp.Compartilhado.Apresentacao;
 
@@ -22,6 +23,7 @@ public static class InjecaoDependencia
         services.AddAutoMapper(config =>
         {
             config.AddProfile<CaixaProfile>();
+            config.AddProfile<RevistaProfile>();
         });
     }
 }

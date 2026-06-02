@@ -26,20 +26,8 @@ public sealed class Revista : EntidadeBase<Revista>
     {
         List<string> erros = new List<string>();
 
-        if (string.IsNullOrWhiteSpace(Titulo))
-            erros.Add("O campo \"Título\" deve ser preenchido.");
-
-        else if (Titulo.Length < 2 || Titulo.Length > 100)
-            erros.Add("O campo \"Título\" deve conter entre 2 e 100 caracteres.");
-
-        if (NumeroEdicao < 1)
-            erros.Add("O campo \"Número da Edição\" deve conter um valor maior que 0.");
-
         if (AnoPublicacao < 1 || AnoPublicacao > DateTime.Now.Year)
             erros.Add("O campo \"Ano de Publicação\" deve conter um ano válido.");
-
-        if (Caixa == null)
-            erros.Add("O campo \"Caixa\" deve ser preenchido.");
 
         return erros;
     }
