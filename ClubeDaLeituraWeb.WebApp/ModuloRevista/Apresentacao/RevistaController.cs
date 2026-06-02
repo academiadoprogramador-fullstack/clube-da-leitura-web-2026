@@ -83,19 +83,17 @@ public class RevistaController : Controller
     [HttpGet]
     public ActionResult Editar(string id)
     {
-        Revista? revista = repositorioRevista.SelecionarPorId(id);
+        Result<DetalhesRevistaDto> resultado = servicoRevista.SelecionarPorId(id);
 
-        if (revista == null)
+        if (resultado.IsFailed)
+        {
+            TempData.AddErrorMessage(resultado);
+
             return RedirectToAction(nameof(Listar));
+        }
 
-        EditarRevistaViewModel editarVm = new EditarRevistaViewModel(
-            id,
-            revista.Titulo,
-            revista.NumeroEdicao,
-            revista.AnoPublicacao,
-            revista.Caixa.Id,
-            SelecionarCaixas()
-        );
+        EditarRevistaViewModel editarVm =
+            mapeador.Map<EditarRevistaViewModel>(resultado.Value) with { Caixas = SelecionarCaixas() };
 
         return View(editarVm);
     }
@@ -103,30 +101,19 @@ public class RevistaController : Controller
     [HttpPost]
     public ActionResult Editar(EditarRevistaViewModel editarVm)
     {
-        Revista? revista = repositorioRevista.SelecionarPorId(editarVm.Id);
-        Caixa? caixaSelecionada = repositorioCaixa.SelecionarPorId(editarVm.CaixaId);
-
-        if (revista == null)
-            return RedirectToAction(nameof(Listar));
-
-        if (caixaSelecionada == null)
-            ModelState.AddModelError(nameof(editarVm.CaixaId), "Selecione uma caixa válida.");
-
-        if (editarVm.AnoPublicacao > DateTime.Now.Year)
-            ModelState.AddModelError(nameof(editarVm.AnoPublicacao), "O campo \"Ano de Publicação\" deve conter um ano válido.");
-
         if (!ModelState.IsValid)
             return View(editarVm with { Caixas = SelecionarCaixas() });
 
-        Revista revistaAtualizada = new Revista(
-            editarVm.Titulo,
-            editarVm.NumeroEdicao,
-            editarVm.AnoPublicacao,
-            caixaSelecionada!,
-            revista.Status
-        );
+        EditarRevistaDto dto = mapeador.Map<EditarRevistaDto>(editarVm);
 
-        repositorioRevista.Editar(editarVm.Id, revistaAtualizada);
+        Result resultado = servicoRevista.Editar(dto);
+
+        if (resultado.IsFailed)
+        {
+            ModelState.AddModelError(resultado);
+
+            return View(editarVm with { Caixas = SelecionarCaixas() });
+        }
 
         return RedirectToAction(nameof(Listar));
     }

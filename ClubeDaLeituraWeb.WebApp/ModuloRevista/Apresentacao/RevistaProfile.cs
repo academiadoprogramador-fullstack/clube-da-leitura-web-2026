@@ -8,5 +8,9 @@ public class RevistaProfile : Profile
     public RevistaProfile()
     {
         CreateMap<CadastrarRevistaViewModel, CadastrarRevistaDto>();
+        CreateMap<EditarRevistaViewModel, EditarRevistaDto>();
+
+        CreateMap<DetalhesRevistaDto, EditarRevistaViewModel>()
+            .ForCtorParam("Caixas", opt => opt.MapFrom(_ => new List<OpcaoCaixaViewModel>()));
     }
 }
