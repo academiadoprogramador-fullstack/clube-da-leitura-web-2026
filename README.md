@@ -1,5 +1,7 @@
 # Clube da Leitura
 
+![image](./.docs/clube_da_leitura.gif)
+
 Gustavo tem uma coleção grande de revistas em quadrinhos. Por isso, resolveu
 emprestar para os amigos. Assim foi criado o Clube da Leitura.
 
@@ -38,10 +40,10 @@ empréstimos.
 **Regras de Negócio:**
 
 - Campos obrigatórios:
-    - Título (2-100 caracteres)
-    - Número da edição (número positivo)
-    - Ano de publicação (data válida)
-    - Caixa (seleção obrigatória)
+  - Título (2-100 caracteres)
+  - Número da edição (número positivo)
+  - Ano de publicação (data válida)
+  - Caixa (seleção obrigatória)
 - Não pode haver revistas com mesmo título e edição
 
 ## 3. Módulo de Amigos
@@ -56,10 +58,10 @@ empréstimos.
 **Regras de Negócio:**
 
 - Campos obrigatórios:
-    - Nome (mínimo 3 caracteres, máximo 100)
-    - Nome do responsável (mínimo 3 caracteres, máximo 100)
-    - Telefone (formato validado: 10-11 dígitos)
-    - Não pode haver amigos com o mesmo nome e telefone
+  - Nome (mínimo 3 caracteres, máximo 100)
+  - Nome do responsável (mínimo 3 caracteres, máximo 100)
+  - Telefone (formato validado: 10-11 dígitos)
+  - Não pode haver amigos com o mesmo nome e telefone
 
 ## 4. Módulo de Empréstimos
 
@@ -81,10 +83,10 @@ empréstimos.
 - Não permitir excluir um amigo caso tenha empréstimos vinculados
   Regras de Negócio:
 - Campos obrigatórios:
-    - Amigo
-    - Revista (disponível no momento)
-    - Data empréstimo (automática)
-    - Data devolução (calculada conforme caixa)
+  - Amigo
+  - Revista (disponível no momento)
+  - Data empréstimo (automática)
+  - Data devolução (calculada conforme caixa)
 - Status possíveis: Aberto / Concluído / Atrasado
 - Cada amigo só pode ter um empréstimo ativo por vez
 - Empréstimos atrasados devem ser destacados visualmente
@@ -97,15 +99,15 @@ empréstimos.
 2. Abra o terminal ou o prompt de comando e navegue até a pasta raiz
 3. Utilize o comando abaixo para restaurar as dependências do projeto.
 
-    ```bash
-    dotnet restore
-    ```
+   ```bash
+   dotnet restore
+   ```
 
 4. Para executar o projeto compilando em tempo real
 
-    ```bash
-    dotnet run --project ClubeDaLeituraWeb.WebApp
-    ```
+   ```bash
+   dotnet run --project ClubeDaLeituraWeb.WebApp
+   ```
 
 ## Requisitos
 
